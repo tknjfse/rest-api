@@ -241,14 +241,17 @@ components:
     BackendErrorResponse:
       type: object
       properties:
+        code:
+          type: string
+          description: Внутрисистемный код ошибки
+          nullable: false
         message:
           type: string
           nullable: false
         errors:
           type: object
           nullable: false
-          properties:
-            fieldName:
+          properties:            fieldName:
               type: array
               nullable: false
               items:
