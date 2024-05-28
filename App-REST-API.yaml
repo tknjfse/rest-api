@@ -1,0 +1,489 @@
+openapi: 3.0.0
+info:
+  title: Rehau PRO App
+  version: 1.0.0
+  description: "Kind reminder: выпрямить спину, попить воды"
+
+tags:
+- name: "Verification"
+  description: "Верификация"
+- name: "Items"
+  description: "Изделия"
+- name: "Dictionaries"
+  description: "Словари"
+
+paths:
+  /verification:
+    post:
+      tags:
+      - "Verification"
+      summary: Проверить информацию об изделии по Data-Matrix или Штрих-коду
+      security:
+       - apiKeyAuth: []
+      requestBody:
+        description: Data Matrix код для проверки
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                codes:
+                  type: array
+                  description: Коды
+                  nullable: false
+                  items:
+                    type: string
+                    description: Штрих код
+                    minItems: 1
+                    maxItems: 2
+                    nullable: false
+                codes_type:
+                  type: string
+                  description: Тип проверочных кодов
+                  enum:
+                    - barCode
+                    - dataMatrix
+                  nullable: false
+                codes_standart:
+                  type: string
+                  description: Стандарт кодов
+                  example: 'Code 128'
+                  nullable: true
+              required:
+                - codes
+                - codes_type
+                - codes_standart
+      responses:
+        '200':
+          description: Успешный результат проверки изделия
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductItem'
+        '401':
+          description: Нет доступа к REST API
+        '422':
+          description: |- 
+            Обработанная ошибка:
+            - Изделие не найдено
+            - Необходим второй код
+            - Коды принадлежат разным изделиям
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackendErrorResponse'
+        '500':
+          description: Внутренняя ошибка сервера
+          
+  /items/{uuid}:
+    get:
+      tags:
+        - Items
+      security:
+        - apiKeyAuth: []
+      summary: Получить информацию об изделии по его уникальному идентификатору
+      parameters:
+        - name: uuid
+          in: path
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: UUID изделия
+      responses:
+        '200':
+          description: Успешный ответ с детальной информацией об изделии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductItem'
+        '401':
+          description: Пользователь не авторизован
+        '404':
+          description: Изделие с указанным идентификатором не найдено
+        '422':
+          description: Обработанная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackendErrorResponse'
+        '500':
+          description: Внутренняя ошибка сервера
+          
+  /dictionaries/foundation:
+    get:
+      tags:
+        - Dictionaries
+      summary: Получить общую информацию о приложении
+      security:
+       - apiKeyAuth: []
+      responses:
+        '200':
+          description: Успешное получение общей информации о приложении
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  versions:
+                    type: object
+                    properties:
+                      required_minimal_version:
+                        type: string
+                        description: Минимально доступная для использования версия приложения
+                        example: "1.0.0"
+                        nullable: false
+                      recommended_version:
+                        type: string
+                        description: Рекомендуемая версия приложения
+                        example: "1.0.2"
+                        nullable: false
+                    required:
+                      - required_minimal_version
+                      - recommended_version
+                required:
+                  - versions
+                    
+        '401':
+          description: Нет доступа
+        '422':
+          description: Обработанная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackendErrorResponse'
+        '500':
+          description: Внутренняя ошибка сервера
+          
+  /dictionaries/instructions:
+    get:
+      tags:
+        - Dictionaries
+      summary: Получить инструкции
+      security:
+       - apiKeyAuth: []
+      responses:
+        '200':
+          description: Успешное получение инструкций
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      description: Идентификатор инструкции
+                      example: 1
+                      nullable: false
+                    name:
+                      type: string
+                      description: Название инструкции
+                      example: 'Фитинги'
+                      nullable: false
+                    icon:
+                      type: string
+                      description: Иконка темы инструкции
+                      example: '/example.png'
+                      nullable: false
+                    pages:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          page_number:
+                            type: integer
+                            description: Номер страницы инструкции
+                            example: 1
+                            nullable: false
+                          text:
+                            type: string
+                            description: Текст страницы
+                            example: 'Штрих-код на фитинге находится на бирке или этикетке, прикрепленной к упаковке'
+                            nullable: false
+                          image:
+                            type: string
+                            description: Изображение
+                            nullable: false
+                        required:
+                          - page_number
+                          - text
+                          - image
+                  required:
+                    - id
+                    - name
+                    - pages
+
+        '401':
+          description: Нет доступа
+        '422':
+          description: Обработанная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackendErrorResponse'
+        '500':
+          description: Внутренняя ошибка сервера
+          
+
+
+components:               
+  securitySchemes:
+    apiKeyAuth:
+      type: apiKey
+      description: API ключ для доступа к API
+      name: X-API-Key
+      in: header
+
+  schemas:
+    BackendErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          nullable: false
+        errors:
+          type: object
+          nullable: false
+          properties:
+            fieldName:
+              type: array
+              nullable: false
+              items:
+                type: string
+                nullable: false   
+    
+    ProductItem:
+      type: object
+      properties:
+        uuid:
+          type: string
+          description: Идентификатор изделия
+          example: '123e4567-e89b-12d3-a456-426655440000'
+          nullable: false
+        sku:
+          type: integer
+          description: Артикул продукта
+          nullable: false
+          example: 13709731001
+        scans_count:
+          type: integer
+          description: Количество проверок изделия
+          example: 0
+          nullable: true
+        production_date:
+          type: string
+          format: date
+          description: Дата производства изделия
+          nullable: false
+        instance_type:
+          type: object
+          description: Тип экземпляра
+          nullable: false
+          properties:
+            id: 
+              type: integer
+              description: Идентификатор типа
+              example: 1
+              nullable: false
+            title:
+              type: string
+              description: Название типа
+              example: 'Розничный экземпляр'
+              # example id:2 – 'Демонстрационный экземпляр'
+              nullable: false
+          required:
+            - id
+            - title
+        authenticity_status:
+          type: object
+          description: Статус проверки
+          nullable: true
+          properties:
+            id: 
+              type: integer
+              description: Идентификатор статуса
+              example: 1
+              nullable: false
+            title:
+              type: string
+              description: Название статуса
+              example: 'Оригинальный продукт'
+              # example id:2 – 'Подделка или витринный образец'
+              nullable: false
+            description:
+              type: string
+              description: Описание статуса
+              example: 'Продукт считается оригинальным если количество сканирований не превышает ...'
+              # example id:2 – 'Продукт может являться подделкой или витринным образцом, поскольку количество сканирований изделия превышает ...'
+          required:
+            - id
+            - title
+            - description
+        documents:
+          type: array
+          description: Документы изделия
+          nullable: false
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                description: Название документа
+                example: 'Паспорт'
+                nullable: false
+              link:
+                type: string
+                description: Ссылка на документ
+                nullable: false
+                example: '/example.pdf'
+        product_info:
+          $ref: '#/components/schemas/Product'
+          nullable: true
+      required:
+        - uuid
+        - sku
+        - scans_count
+        - instance_type
+        - authenticity_status
+        - documents
+        - product_info
+    
+    Product:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID продукта
+          nullable: false
+          example: 1
+        sku:
+          type: integer
+          description: Артикул продукта
+          nullable: false
+          example: 13709731001
+        name:
+          type: string
+          description: Название продукта
+          nullable: false
+          example: Фитинг
+        recommended_retail_price:
+          type: integer
+          description: Рекомендованная розничная цена
+          nullable: true
+          example: 15000
+        preview_image:
+          type: string
+          description: Изображение для превью
+          example: '/example.png'
+          nullable: true
+        images:
+          type: array
+          description: Изображения продукта
+          nullable: false
+          items:
+            type: string
+            description: Изображение
+            example: '/example.png'
+            nullable: false
+        description:
+          type: string
+          description: Описание продукта
+          nullable: true
+          example: 'Предназначена для систем обогрева поверхностей.'
+        properties:
+          type: array
+          description: Характеристики продукта
+          nullable: false
+          items:
+            $ref: '#/components/schemas/Property'
+        options:
+          type: array
+          description: Опции продукта (типоразмеры)
+          nullable: false
+          items:
+            $ref: '#/components/schemas/ProductOption'
+        documents:
+          type: array
+          description: Документация продукта
+          nullable: false
+          items:
+            type: object
+            nullable: false
+            properties:
+              name:
+                type: string
+                description: Название документа
+                nullable: false
+                example: 'Паспорт'
+              link:
+                type: string
+                description: Ссылка на документ
+                nullable: false
+                example: '/example.pdf'
+            required:
+              - name
+              - link
+      required:
+        - id
+        - sku
+        - name
+        - recommended_retail_price
+        - images
+        - description
+        - properties
+        - options
+        - documents
+        
+    Property:
+      description: Свойство продукта
+      type: object
+      nullable: false
+      properties:
+        name:
+          type: string
+          description: Название свойства
+          nullable: false
+          example: 'Вес'
+        value:
+          type: string
+          description: Значение свойства
+          nullable: true
+          example: '500 гр.'
+      required:
+        - name
+        - value
+  
+    ProductOption:
+      description: Продуктовая опция
+      type: object
+      nullable: false
+      properties:
+        id:
+          type: integer
+          description: ID продукта
+          nullable: false
+          example: 1
+        sku:
+          type: string
+          description: Артикул изделия
+          nullable: false
+        properties:
+          type: array
+          description: Характеристики продукта
+          nullable: false
+          items:
+            $ref: '#/components/schemas/Property'
+  
+  parameters:
+    Page:
+      name: page
+      in: query
+      description: Номер страницы
+      required: false
+      schema:
+        type: integer
+        default: 1
+        

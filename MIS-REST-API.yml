@@ -1,0 +1,919 @@
+openapi: '3.0.2'
+info:
+  title: Сервис учета продукции
+  version: '1.0'
+
+tags:
+- name: "Batches"
+  description: "Управление партиями"
+- name: "Dictionaries"
+  description: "Справочники"
+
+
+paths:
+  /batches/:
+    get:
+      tags:
+        - Batches
+      summary: Получить перечень партий
+      security:
+        - BasicAuth: []   
+      parameters:
+        - name: factory_id
+          in: query
+          schema: 
+            type: string
+            format: uuid
+          required: false
+          example: '9fd9f480-b944-11ee-813b-2b05bebdd007'
+          description: Идентификатор производства
+        - name: status_id
+          in: query
+          schema:
+            type: array
+            items:
+              type: integer
+              example: [1, 2]
+          required: false
+          description: Идентификатор статуса
+        - name: search
+          in: query
+          schema:
+            type: string
+          required: false
+          description: Строка поиска
+      responses:
+        '200':
+          description: Успешное получение перечня партий
+          content:
+            application/json:
+              schema:
+                type: array
+                description: Перечень партий
+                nullable: false
+                items:
+                  $ref: '#/components/schemas/Batch'
+                  nullable: true
+        '401':
+          description: Пользователь не авторизован
+        '403':
+          description: Недостаточно прав
+        '404':
+          description: Производство не найдено
+        '422':
+          description: Обработанная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackendErrorResponse'
+        '500':
+          description: Внутренняя ошибка сервера
+
+  /batches/add:
+    post:
+      tags:
+        - Batches
+      summary: Создать партию
+      security:
+        - BasicAuth: []
+      requestBody:
+        description: Запрос создания партии
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                factory_id:
+                  type: string
+                  format: uuid
+                  description: Идентификатор производства
+                  nullable: true
+                name:
+                  type: string
+                  description: Название партии
+                  nullable: true
+                products:
+                  type: array
+                  description: Продукты партии
+                  nullable: false
+                  items:
+                    type: object
+                    description: Продукты партии
+                    nullable: false
+                    properties:
+                      sku:
+                        type: string
+                        description: Артикул продукта
+                        nullable: false
+                        example: '12406013003'
+                      production_date:
+                        type: string
+                        description: Дата производства (YYYY-MM)
+                        nullable: false
+                        example: '2024-07'
+                      machine_id:
+                        type: integer
+                        description: Номер машины
+                        nullable: true
+                        example: 1
+                      count:
+                        type: integer
+                        description: Количество изделий
+                        nullable: false
+                        example: 500000
+                    required:
+                      - sku
+                      - production_date
+                      - machine_id
+                      - count
+              required:
+                - factory_id
+                - name
+                - products
+      responses:
+        '200':
+          description: Успешный результат создания партии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchDetail'
+        '401':
+          description: Пользователь не авторизован
+        '403':
+          description: Недостаточно прав
+        '422':
+          description: Обработанная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackendErrorResponse'
+        '500':
+          description: Внутренняя ошибка сервера
+
+  /batches/{id}:
+    get:
+      tags:
+        - Batches
+      summary: Получить детальную информацию о партии
+      security:
+        - BasicAuth: []   
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: integer
+          required: true
+          description: Идентификатор партии
+      responses:
+        '200':
+          description: Успешное получение информации о партии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchDetail'
+        '401':
+          description: Пользователь не авторизован
+        '403':
+          description: Недостаточно прав
+        '404':
+          description: Партия не найдена
+        '422':
+          description: Обработанная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackendErrorResponse'
+        '500':
+          description: Внутренняя ошибка сервера
+
+  /batches/{id}/add-qa-report:
+    patch:
+      tags:
+        - Batches
+      summary: Прикрепить протокол испытаний
+      security:
+        - BasicAuth: []   
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: integer
+          required: true
+          description: Идентификатор партии
+      requestBody:
+        description: Протокол производственных испытаний
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  nullable: false
+              required:
+                - file
+      responses:
+        '200':
+          description: Успешное получение информации о партии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchDetail'
+        '401':
+          description: Пользователь не авторизован
+        '403':
+          description: Недостаточно прав
+        '404':
+          description: Партия не найдена
+        '422':
+          description: Обработанная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackendErrorResponse'
+        '500':
+          description: Внутренняя ошибка сервера
+
+  /batches/{id}/exports/download:
+    get:
+      tags:
+        - Batches
+      summary: Скачать выгрузки партии
+      security:
+        - BasicAuth: []   
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: integer
+          required: true
+          description: Идентификатор партии
+      responses:
+        '200':
+          description: Успешное получение архива
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  zip:
+                    type: string
+                    format: binary
+                    description: zip архив с csv документами по каждой выгрузке
+                    nullable: false
+        '401':
+          description: Пользователь не авторизован
+        '403':
+          description: Недостаточно прав
+        '404':
+          description: Партия не найдена
+        '422':
+          description: Обработанная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackendErrorResponse'
+        '500':
+          description: Внутренняя ошибка сервера
+
+  /batches/{id}/exports/{export_id}/preview:
+    get:
+      tags:
+        - Batches
+      summary: Предпросмотр выгрузки 
+      security:
+        - BasicAuth: []   
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: integer
+          required: true
+          description: Идентификатор партии
+        - name: export_id
+          in: path
+          schema:
+            type: integer
+          required: true
+          description: Идентификатор выгрузки
+      responses:
+        '200':
+          description: Успешное получение фрагмента выгрузки
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    unique_value:
+                      type: string
+                      description: Уникальное значение
+                      example: '30212'
+                      nullable: false
+                    sku:
+                      type: string
+                      description: Артикул
+                      example: '1096680300'
+                      nullable: false
+                    production_month: 
+                      type: integer
+                      description: Месяц изготовления
+                      example: 02
+                      nullable: false
+                    production_year:
+                      type: integer
+                      description: Год изготовления
+                      example: 24
+                      nullable: false
+                    machine_number:
+                      type: string
+                      description: Номер машины
+                      example: 'I'
+                      nullable: false
+                    full_code:
+                      type: string
+                      description: Сгенерированный код
+                      example: '1096680244I30212'
+                      nullable: false
+                  required:
+                    - unique_value
+                    - sku
+                    - production_month
+                    - production_year
+                    - machine_number
+                    - full_code
+        '401':
+          description: Пользователь не авторизован
+        '403':
+          description: Недостаточно прав
+        '404':
+          description: Выгрузка не найдена
+        '422':
+          description: Обработанная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackendErrorResponse'
+        '500':
+          description: Внутренняя ошибка сервера
+
+  /batches/{id}/exports/{export_id}/rebind:
+    patch:
+      tags:
+        - Batches
+      summary: Изменение принадлежности выгрузки к партии 
+      security:
+        - BasicAuth: []   
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: integer
+          required: true
+          description: Идентификатор партии
+        - name: export_id
+          in: path
+          schema:
+            type: integer
+          required: true
+          description: Идентификатор партии
+      requestBody:
+        description: Идентификатор партии для привязки
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                target_batch_id:
+                  type: integer
+                  description: Идентификатор партии для привязки
+                  nullable: false
+                  example: 2
+              required:
+                - target_batch_id
+      responses:
+        '200':
+          description: Выгрузка успешно перепривязана 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchDetail'
+        '401':
+          description: Пользователь не авторизован
+        '403':
+          description: Недостаточно прав
+        '404':
+          description: Информация не найдена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackendErrorResponse'
+        '422':
+          description: Обработанная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackendErrorResponse'
+        '500':
+          description: Внутренняя ошибка сервера
+
+  /batches/{id}/exports/{export_id}:
+    delete:
+      tags:
+        - Batches
+      summary: Удаление выгрузки
+      security:
+        - BasicAuth: []   
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: integer
+          required: true
+          description: Идентификатор партии
+        - name: export_id
+          in: path
+          schema:
+            type: integer
+          required: true
+          description: Идентификатор партии
+      responses:
+        '200':
+          description: Выгрузка успешно удалена 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchDetail'
+        '401':
+          description: Пользователь не авторизован
+        '403':
+          description: Недостаточно прав
+        '404':
+          description: Информация не найдена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackendErrorResponse'
+        '422':
+          description: Обработанная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackendErrorResponse'
+        '500':
+          description: Внутренняя ошибка сервера
+
+  /batches/{id}/archive:
+    post:
+      tags:
+        - Batches
+      summary: Аривировать партию
+      security:
+        - BasicAuth: []   
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: integer
+          required: true
+          description: Идентификатор партии
+      responses:
+        '200':
+          description: Статус успешно изменен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchDetail'
+        '401':
+          description: Пользователь не авторизован
+        '403':
+          description: Недостаточно прав
+        '404':
+          description: Партия не найдена
+        '422':
+          description: Обработанная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackendErrorResponse'
+        '500':
+          description: Внутренняя ошибка сервера   
+
+  /batches/{id}/release-verification:
+    post:
+      tags:
+        - Batches
+      summary: Отправить партию на проверку
+      security:
+        - BasicAuth: []   
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: integer
+          required: true
+          description: Идентификатор партии
+      responses:
+        '200':
+          description: Статус успешно изменен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchDetail'
+        '401':
+          description: Пользователь не авторизован
+        '403':
+          description: Недостаточно прав
+        '404':
+          description: Партия не найдена
+        '422':
+          description: Обработанная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackendErrorResponse'
+        '500':
+          description: Внутренняя ошибка сервера   
+
+
+  /batches/{id}/exports/add:
+    post:
+      tags:
+        - Batches
+      summary: Добавить выгрузку в партию
+      security:
+        - BasicAuth: []
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: integer
+          required: true
+          description: Идентификатор партии
+      requestBody:
+        description: Запрос добавления выгрузки
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sku:
+                  type: string
+                  description: Артикул продукта
+                  nullable: false
+                  example: '12406013003'
+                production_date:
+                  type: string
+                  description: Дата производства (YYYY-MM)
+                  nullable: false
+                  example: '2024-07'
+                machine_id:
+                  type: integer
+                  description: Номер машины
+                  nullable: true
+                  example: 1
+                count:
+                  type: integer
+                  description: Количество изделий
+                  nullable: false
+                  example: 500000
+              required:
+                - sku
+                - production_date
+                - machine_id
+                - count 
+      responses:
+        '200':
+          description: Успешный результат добавления выгрузки
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchDetail'
+        '401':
+          description: Пользователь не авторизован
+        '403':
+          description: Недостаточно прав
+        '422':
+          description: Обработанная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackendErrorResponse'
+        '500':
+          description: Внутренняя ошибка сервера
+
+
+  /factories/products/:
+    get:
+      tags:
+        - Dictionaries
+      summary: Получить информацию об артикулах по производству
+      security:
+       - BasicAuth: []
+      parameters:
+        - name: factory_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          required: false
+          description: UUID изделия
+        - name: search
+          in: query
+          schema:
+            type: string
+          required: false
+          description: Строка поиска
+      responses:
+        '200':
+          description: Успешное получение информации
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  productions:
+                    type: object
+                    description: Производство
+                    nullable: false
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                        description: Идентификатор производства
+                        example: "9fd9f480-b944-11ee-813b-2b05bebdd007"
+                        nullable: false
+                      name:
+                        type: string
+                        description: Название производства
+                        example: "Rusinox"
+                        nullable: false
+                      products:
+                        type: array
+                        description: Перечень производимых артикулов
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+                              description: Идентификатор продукта
+                              example: 1
+                              nullable: false
+                            sku:
+                              type: integer
+                              description: Артикул
+                              example: '1096761001'
+                              nullable: false
+                            name:
+                              type: string
+                              description: Название продукта
+                              example: "Угольник настенный"
+                              nullable: false
+                          required:
+                            - id
+                            - sku
+                            - name
+                required:
+                  - productions
+        '401':
+          description: Пользователь не атвороизован 
+        '403':
+          description: Недостаточно прав
+        '404':
+          description: Производство не найдено
+        '422':
+          description: Обработанная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackendErrorResponse'
+        '500':
+          description: Внутренняя ошибка сервера
+
+
+
+components:               
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic
+      description: Логин и пароль пользователя
+      name: Authorization
+      in: header
+
+  schemas:
+    BackendErrorResponse:
+      type: object
+      properties:
+        title:
+          type: string
+          nullable: false
+        message:
+          type: string
+          nullable: false
+        errors:
+          type: object
+          nullable: true
+          properties:
+            fieldName:
+              type: array
+              nullable: false
+              items:
+                type: string
+                nullable: false
+          required:
+            - fieldName
+      required:
+        - title
+        - message
+        - errors
+
+    Batch:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Уникальный идентификатор партии
+          nullable: false
+          example: 1
+        factory_id:
+          type: string
+          format: uuid
+          description: Идентификатор производства
+          nullable: false
+        name:
+          type: string
+          description: Название партии
+          nullable: false
+          example: 'Партия 1'
+        creation_date:
+          type: string
+          format: date
+          description: Дата созданрия партии
+          nullable: false
+        production_date:
+          type: string
+          format: date
+          description: Месяц и год созданрия партии
+          nullable: false
+        status:
+          type: object
+          description: Статус ЖЦ партии
+          nullable: false
+          properties:
+            id:
+              type: integer
+              description: Уникальный идентификатор статуса
+              nullable: false
+              example: 1
+            name:
+              type: string
+              description: Название статуса
+              nullable: false
+              example: 'В производстве'
+            colour_scheme: 
+              type: string
+              description: Цветовая схема в HEX
+              nullable: false
+              example: '0F75E0'
+          required:
+            - id
+            - name
+            - colour_scheme
+      required:
+        - id
+        - factory_id
+        - name
+        - status
+        - creation_date
+        - production_date
+
+    BatchDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Уникальный идентификатор партии
+          nullable: false
+          example: 1
+        factory_id:
+          type: string
+          format: uuid
+          description: Идентификатор производства
+          nullable: false
+        name:
+          type: string
+          description: Название партии
+          nullable: false
+          example: 'Партия 1'
+        creation_date:
+          type: string
+          format: date
+          description: Дата созданрия партии
+          nullable: false
+        production_date:
+          type: string
+          format: date
+          description: Месяц и год созданрия партии
+        status:
+          type: object
+          description: Статус ЖЦ партии
+          nullable: false
+          properties:
+            id:
+              type: integer
+              description: Уникальный идентификатор статуса
+              nullable: false
+              example: 1
+            name:
+              type: string
+              description: Название статуса
+              nullable: false
+              example: 'В производстве'
+            colour_scheme: 
+              type: string
+              description: Цветовая схема в HEX
+              nullable: false
+              example: '0F75E0'
+          required:
+            - id
+            - name
+            - colour_scheme
+        qa_report:
+          type: string
+          description: Протокол испытаний
+          nullable: true
+          example: '/qa-report/document.pdf'
+        exports:
+          type: array
+          description: Перечень выгрузок
+          nullable: false
+          items:
+            $ref: '#/components/schemas/Export'
+            nullable: true
+      required:
+        - id
+        - factory_id
+        - name
+        - status
+        - qa_report
+        - exports
+        - creation_date
+        - production_date
+
+    Export:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Уникальный идентификатор выгрузки
+          nullable: false
+          example: 1
+        sku:
+          type: string
+          description: Артикул продукта
+          nullable: false
+          example: '12406013003'
+        product_name:
+          type: string
+          description: Название продукта
+          nullable: false
+          example: 'Угольник настенный'
+        production_date:
+          type: string
+          description: Дата производства (YYYY-MM)
+          nullable: false
+          example: '2024-07'
+        machine_id:
+          type: integer
+          description: Номер машины
+          nullable: false
+          example: 1
+        items_count:
+          type: integer
+          description: Количество изделий
+          nullable: false
+          example: 100000
+        preview:
+          type: array
+          description: Превью выгрузки
+          nullable: false
+          items:
+            type: string
+            description: Код маркировки
+            nullable: false
+            example: '1096641123IEAAAa'
+      required:
+        - id
+        - sku
+        - product_name
+        - production_date
+        - machine_id
+        - items_count
+        - preview
