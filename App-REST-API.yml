@@ -227,6 +227,28 @@ paths:
         '500':
           description: Внутренняя ошибка сервера
           
+  /log-error:
+    post:
+      tags:
+      - "Dictionaries"
+      summary: Логировать ошибку
+      security:
+       - apiKeyAuth: []
+      requestBody:
+        description: Информация об инциденте
+        required: true
+        content:
+          application/json:
+            schema:
+                $ref: '#/components/schemas/ErrorLog'
+      responses:
+        '200':
+          description: Успешный результат логирования
+        '401':
+          description: Нет доступа к REST API
+        '500':
+          description: Внутренняя ошибка сервера
+          
 
 
 components:               
@@ -241,6 +263,10 @@ components:
     BackendErrorResponse:
       type: object
       properties:
+        code:
+          type: string
+          description: Внутрисистемный код ошибки
+          nullable: false
         message:
           type: string
           nullable: false
@@ -476,6 +502,81 @@ components:
           nullable: false
           items:
             $ref: '#/components/schemas/Property'
+  
+    ErrorLog:
+      description: Лог ошибки пользователя
+      type: object
+      nullable: false
+      properties:
+        hash:
+          type: string
+          description: Хеш строка лога
+          nullable: false
+          example: '86c24905d28cfb9222f4231193cde547'
+        app_version:
+          type: string
+          description: Версия приложения
+          nullable: false
+          example: '1.1.0'
+        os:
+          type: string
+          description: Операционная система приложения
+          nullable: false
+          enum:
+            - iOS
+            - Android
+        download_source:
+          type: string
+          description: Источник загрузки
+          nullable: false
+          enum:
+            - AppStore
+            - GooglePlay
+            - SDK
+        device_name:
+          type: string
+          description: Устройство пользователя
+          nullable: false
+          example: 'iPhone 11 Pro'
+        error_navigation_stack:
+          type: array
+          description: Стек открытых экранов/окон пользователя в момент проишествия
+          nullable: false
+          items:
+            type: string
+            properties:
+              name:
+                type: string
+                description: Название экрана
+                nullable: false
+                example: 'Сканер'
+            required:
+              - name
+        error_timestamp:
+          type: string
+          description: Время возникновения ошибки
+          format: date-time
+          nullable: true
+        request_timestamp:
+          type: string
+          description: Время обращения пользователя
+          format: date-time
+          nullable: false
+        error_code:
+          type: string
+          description: Код ошибки
+          example: 'unable_to_reach_server'
+          nullable: true
+      required:
+        - app_version
+        - os
+        - download_source
+        - device_name
+        - request_timestamp
+        - error_navigation_stack
+        - error_timestamp
+        - error_code
+
   
   parameters:
     Page:
