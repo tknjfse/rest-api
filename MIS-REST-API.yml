@@ -240,7 +240,7 @@ paths:
           description: Внутренняя ошибка сервера
 
   /batches/{id}/archive:
-    post:
+    patch:
       tags:
         - Batches
       summary: Аривировать партию
@@ -276,7 +276,7 @@ paths:
           description: Внутренняя ошибка сервера   
 
   /batches/{id}/release-verification:
-    post:
+    patch:
       tags:
         - Batches
       summary: Отправить партию на проверку
