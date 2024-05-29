@@ -5,7 +5,9 @@ info:
 
 tags:
 - name: "Batches"
-  description: "Управление партиями"
+  description: "Партии"
+- name: "Exports"
+  description: "Выгрузки"
 - name: "Dictionaries"
   description: "Справочники"
 
@@ -237,10 +239,84 @@ paths:
         '500':
           description: Внутренняя ошибка сервера
 
+  /batches/{id}/archive:
+    post:
+      tags:
+        - Batches
+      summary: Аривировать партию
+      security:
+        - BasicAuth: []   
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: integer
+          required: true
+          description: Идентификатор партии
+      responses:
+        '200':
+          description: Статус успешно изменен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchDetail'
+        '401':
+          description: Пользователь не авторизован
+        '403':
+          description: Недостаточно прав
+        '404':
+          description: Партия не найдена
+        '422':
+          description: Обработанная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackendErrorResponse'
+        '500':
+          description: Внутренняя ошибка сервера   
+
+  /batches/{id}/release-verification:
+    post:
+      tags:
+        - Batches
+      summary: Отправить партию на проверку
+      security:
+        - BasicAuth: []   
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: integer
+          required: true
+          description: Идентификатор партии
+      responses:
+        '200':
+          description: Статус успешно изменен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchDetail'
+        '401':
+          description: Пользователь не авторизован
+        '403':
+          description: Недостаточно прав
+        '404':
+          description: Партия не найдена
+        '422':
+          description: Обработанная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackendErrorResponse'
+        '500':
+          description: Внутренняя ошибка сервера   
+
+
+
   /batches/{id}/exports/download:
     get:
       tags:
-        - Batches
+        - Exports
       summary: Скачать выгрузки партии
       security:
         - BasicAuth: []   
@@ -282,7 +358,7 @@ paths:
   /batches/{id}/exports/{export_id}/preview:
     get:
       tags:
-        - Batches
+        - Exports
       summary: Предпросмотр выгрузки 
       security:
         - BasicAuth: []   
@@ -364,7 +440,7 @@ paths:
   /batches/{id}/exports/{export_id}/rebind:
     patch:
       tags:
-        - Batches
+        - Exports
       summary: Изменение принадлежности выгрузки к партии 
       security:
         - BasicAuth: []   
@@ -425,7 +501,7 @@ paths:
   /batches/{id}/exports/{export_id}:
     delete:
       tags:
-        - Batches
+        - Exports
       summary: Удаление выгрузки
       security:
         - BasicAuth: []   
@@ -468,83 +544,10 @@ paths:
         '500':
           description: Внутренняя ошибка сервера
 
-  /batches/{id}/archive:
-    post:
-      tags:
-        - Batches
-      summary: Аривировать партию
-      security:
-        - BasicAuth: []   
-      parameters:
-        - name: id
-          in: path
-          schema:
-            type: integer
-          required: true
-          description: Идентификатор партии
-      responses:
-        '200':
-          description: Статус успешно изменен
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BatchDetail'
-        '401':
-          description: Пользователь не авторизован
-        '403':
-          description: Недостаточно прав
-        '404':
-          description: Партия не найдена
-        '422':
-          description: Обработанная ошибка
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BackendErrorResponse'
-        '500':
-          description: Внутренняя ошибка сервера   
-
-  /batches/{id}/release-verification:
-    post:
-      tags:
-        - Batches
-      summary: Отправить партию на проверку
-      security:
-        - BasicAuth: []   
-      parameters:
-        - name: id
-          in: path
-          schema:
-            type: integer
-          required: true
-          description: Идентификатор партии
-      responses:
-        '200':
-          description: Статус успешно изменен
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BatchDetail'
-        '401':
-          description: Пользователь не авторизован
-        '403':
-          description: Недостаточно прав
-        '404':
-          description: Партия не найдена
-        '422':
-          description: Обработанная ошибка
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BackendErrorResponse'
-        '500':
-          description: Внутренняя ошибка сервера   
-
-
   /batches/{id}/exports/add:
     post:
       tags:
-        - Batches
+        - Exports
       summary: Добавить выгрузку в партию
       security:
         - BasicAuth: []
