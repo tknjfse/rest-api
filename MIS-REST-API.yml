@@ -347,6 +347,43 @@ paths:
         '500':
           description: Внутренняя ошибка сервера   
 
+  /batches/{id}/withdraw:
+    patch:
+      tags:
+        - Batches
+      summary: Отозвать партию
+      security:
+        - BasicAuth: []   
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: integer
+          required: true
+          description: Идентификатор партии
+      responses:
+        '200':
+          description: Статус успешно изменен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchDetail'
+        '401':
+          description: Пользователь не авторизован
+        '403':
+          description: Недостаточно прав
+        '404':
+          description: Партия не найдена
+        '422':
+          description: Обработанная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackendErrorResponse'
+        '500':
+          description: Внутренняя ошибка сервера   
+
+
 
 
 
