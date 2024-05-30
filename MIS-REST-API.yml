@@ -589,33 +589,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                sku:
-                  type: string
-                  description: Артикул продукта
-                  nullable: false
-                  example: '12406013003'
-                production_date:
-                  type: string
-                  description: Дата производства (YYYY-MM)
-                  nullable: false
-                  example: '2024-07'
-                machine_id:
-                  type: integer
-                  description: Номер машины
-                  nullable: true
-                  example: 1
-                count:
-                  type: integer
-                  description: Количество изделий
-                  nullable: false
-                  example: 500000
-              required:
-                - sku
-                - production_date
-                - machine_id
-                - count 
+              $ref: '#/components/schemas/NewExportRequest'
       responses:
         '200':
           description: Успешный результат добавления выгрузки
@@ -945,6 +919,35 @@ components:
         - exports
         - creation_date
         - production_date
+
+    NewExportRequest:
+      type: object
+      properties:
+        sku:
+          type: string
+          description: Артикул продукта
+          nullable: false
+          example: '12406013003'
+        production_date:
+          type: string
+          description: Дата производства (YYYY-MM)
+          nullable: false
+          example: '2024-07'
+        machine_id:
+          type: integer
+          description: Номер машины
+          nullable: true
+          example: 1
+        count:
+          type: integer
+          description: Количество изделий
+          nullable: false
+          example: 500000
+      required:
+        - sku
+        - production_date
+        - machine_id
+        - count 
 
     Export:
       type: object
