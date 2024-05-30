@@ -15,6 +15,7 @@ tags:
 paths:
   /batches/:
     get:
+      operationId: getBatches
       tags:
         - Batches
       summary: Получить перечень партий
@@ -72,6 +73,7 @@ paths:
           description: Внутренняя ошибка сервера
 
     post:
+      operationId: createBatch
       tags:
         - Batches
       summary: Создать партию
@@ -106,6 +108,7 @@ paths:
 
   /batches/{id}:
     get:
+      operationId: getBatch
       tags:
         - Batches
       summary: Получить детальную информацию о партии
@@ -142,6 +145,7 @@ paths:
 
   /batches/{id}/add-qa-report:
     patch:
+      operationId: addReport
       tags:
         - Batches
       summary: Прикрепить протокол испытаний
@@ -192,6 +196,7 @@ paths:
 
   /batches/{id}/archive:
     patch:
+      operationId: archiveBatch
       tags:
         - Batches
       summary: Аривировать партию
@@ -228,6 +233,7 @@ paths:
 
   /batches/{id}/release-verification:
     patch:
+      operationId: requestBatchVerification
       tags:
         - Batches
       summary: Отправить партию на проверку
@@ -264,6 +270,7 @@ paths:
 
   /batches/{id}/release:
     patch:
+      operationId: releaseBatch
       tags:
         - Batches
       summary: Выпустить партию
@@ -300,6 +307,7 @@ paths:
 
   /batches/{id}/withdraw:
     patch:
+      operationId: withdrawBatch
       tags:
         - Batches
       summary: Отозвать партию
@@ -340,6 +348,7 @@ paths:
 
   /batches/{id}/exports/download:
     get:
+      operationId: downloadExport
       tags:
         - Exports
       summary: Скачать выгрузки партии
@@ -382,6 +391,7 @@ paths:
 
   /batches/{id}/exports/{export_id}/preview:
     get:
+      operationId: previewExport
       tags:
         - Exports
       summary: Предпросмотр выгрузки 
@@ -464,6 +474,7 @@ paths:
 
   /batches/{id}/exports/{export_id}/rebind:
     patch:
+      operationId: rebindExport
       tags:
         - Exports
       summary: Изменение принадлежности выгрузки к партии 
@@ -525,6 +536,7 @@ paths:
 
   /batches/{id}/exports/{export_id}:
     delete:
+      operationId: deleteExport
       tags:
         - Exports
       summary: Удаление выгрузки
@@ -571,6 +583,7 @@ paths:
 
   /batches/{id}/exports/add:
     post:
+      operationId: addExport
       tags:
         - Exports
       summary: Добавить выгрузку в партию
@@ -613,6 +626,7 @@ paths:
 
   /factories/products/:
     get:
+      operationId: getFactoriesProducts
       tags:
         - Dictionaries
       summary: Получить информацию об артикулах по производству
