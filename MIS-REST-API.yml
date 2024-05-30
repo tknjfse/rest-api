@@ -71,7 +71,6 @@ paths:
         '500':
           description: Внутренняя ошибка сервера
 
-  /batches/add:
     post:
       tags:
         - Batches
