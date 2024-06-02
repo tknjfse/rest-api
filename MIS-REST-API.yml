@@ -51,12 +51,17 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                description: Перечень партий
+                type: object
+                description: Объект с перечнем партий
                 nullable: false
-                items:
-                  $ref: '#/components/schemas/Batch'
-                  nullable: true
+                properties:
+                  batches:
+                    type: array
+                    description: Перечень партий
+                    nullable: false
+                    items:
+                      $ref: '#/components/schemas/Batch'
+                      nullable: true
         '401':
           description: Пользователь не авторизован
         '403':
@@ -416,47 +421,18 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    unique_value:
-                      type: string
-                      description: Уникальное значение
-                      example: '30212'
+                type: object
+                description: Объект со строками таблицы
+                nullable: false
+                properties:
+                  exportStrings:
+                    type: array
+                    description: Строки превью таблицы
+                    nullable: false
+                    items:
+                      $ref: '#/components/schemas/ExportPreviewString'
                       nullable: false
-                    sku:
-                      type: string
-                      description: Артикул
-                      example: '1096680300'
-                      nullable: false
-                    production_month: 
-                      type: integer
-                      description: Месяц изготовления
-                      example: 02
-                      nullable: false
-                    production_year:
-                      type: integer
-                      description: Год изготовления
-                      example: 24
-                      nullable: false
-                    machine_number:
-                      type: string
-                      description: Номер машины
-                      example: 'I'
-                      nullable: false
-                    full_code:
-                      type: string
-                      description: Сгенерированный код
-                      example: '1096680244I30212'
-                      nullable: false
-                  required:
-                    - unique_value
-                    - sku
-                    - production_month
-                    - production_year
-                    - machine_number
-                    - full_code
+                      
         '401':
           description: Пользователь не авторизован
         '403':
@@ -652,51 +628,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  productions:
-                    type: object
-                    description: Производство
-                    nullable: false
-                    properties:
-                      id:
-                        type: string
-                        format: uuid
-                        description: Идентификатор производства
-                        example: "9fd9f480-b944-11ee-813b-2b05bebdd007"
-                        nullable: false
-                      name:
-                        type: string
-                        description: Название производства
-                        example: "Rusinox"
-                        nullable: false
-                      products:
-                        type: array
-                        description: Перечень производимых артикулов
-                        items:
-                          type: object
-                          properties:
-                            id:
-                              type: integer
-                              description: Идентификатор продукта
-                              example: 1
-                              nullable: false
-                            sku:
-                              type: integer
-                              description: Артикул
-                              example: '1096761001'
-                              nullable: false
-                            name:
-                              type: string
-                              description: Название продукта
-                              example: "Угольник настенный"
-                              nullable: false
-                          required:
-                            - id
-                            - sku
-                            - name
-                required:
-                  - productions
+                $ref: '#/components/schemas/FactoryProducts'
         '401':
           description: Пользователь не атвороизован 
         '403':
@@ -767,35 +699,8 @@ components:
           description: Продукты партии
           nullable: false
           items:
-            type: object
-            description: Продукты партии
+            $ref: '#/components/schemas/NewExportRequest'
             nullable: false
-            properties:
-              sku:
-                type: string
-                description: Артикул продукта
-                nullable: false
-                example: '12406013003'
-              production_date:
-                type: string
-                description: Дата производства (YYYY-MM)
-                nullable: false
-                example: '2024-07'
-              machine_id:
-                type: integer
-                description: Номер машины
-                nullable: true
-                example: 1
-              count:
-                type: integer
-                description: Количество изделий
-                nullable: false
-                example: 500000
-            required:
-              - sku
-              - production_date
-              - machine_id
-              - count
       required:
         - factory_id
         - name
@@ -806,6 +711,7 @@ components:
       properties:
         id:
           type: integer
+          format: int64
           description: Уникальный идентификатор партии
           nullable: false
           example: 1
@@ -830,29 +736,7 @@ components:
           description: Месяц и год созданрия партии
           nullable: false
         status:
-          type: object
-          description: Статус ЖЦ партии
-          nullable: false
-          properties:
-            id:
-              type: integer
-              description: Уникальный идентификатор статуса
-              nullable: false
-              example: 1
-            name:
-              type: string
-              description: Название статуса
-              nullable: false
-              example: 'В производстве'
-            colour_scheme: 
-              type: string
-              description: Цветовая схема в HEX
-              nullable: false
-              example: '0F75E0'
-          required:
-            - id
-            - name
-            - colour_scheme
+          $ref: '#/components/schemas/BatchStatus'
       required:
         - id
         - factory_id
@@ -889,29 +773,7 @@ components:
           format: date
           description: Месяц и год созданрия партии
         status:
-          type: object
-          description: Статус ЖЦ партии
-          nullable: false
-          properties:
-            id:
-              type: integer
-              description: Уникальный идентификатор статуса
-              nullable: false
-              example: 1
-            name:
-              type: string
-              description: Название статуса
-              nullable: false
-              example: 'В производстве'
-            colour_scheme: 
-              type: string
-              description: Цветовая схема в HEX
-              nullable: false
-              example: '0F75E0'
-          required:
-            - id
-            - name
-            - colour_scheme
+          $ref: '#/components/schemas/BatchStatus'
         qa_report:
           type: string
           description: Протокол испытаний
@@ -948,10 +810,10 @@ components:
           nullable: false
           example: '2024-07'
         machine_id:
-          type: integer
+          type: string
           description: Номер машины
           nullable: true
-          example: 1
+          example: '1'
         count:
           type: integer
           description: Количество изделий
@@ -968,6 +830,7 @@ components:
       properties:
         id:
           type: integer
+          format: int64
           description: Уникальный идентификатор выгрузки
           nullable: false
           example: 1
@@ -987,10 +850,10 @@ components:
           nullable: false
           example: '2024-07'
         machine_id:
-          type: integer
+          type: string
           description: Номер машины
           nullable: false
-          example: 1
+          example: '1'
         items_count:
           type: integer
           description: Количество изделий
@@ -1013,3 +876,117 @@ components:
         - machine_id
         - items_count
         - preview
+
+    ExportPreviewString:
+      type: object
+      properties:
+        unique_value:
+          type: string
+          description: Уникальное значение
+          example: '30212'
+          nullable: false
+        sku:
+          type: string
+          description: Артикул
+          example: '1096680300'
+          nullable: false
+        production_month: 
+          type: integer
+          description: Месяц изготовления
+          example: 02
+          nullable: false
+        production_year:
+          type: integer
+          description: Год изготовления
+          example: 24
+          nullable: false
+        machine_number:
+          type: string
+          description: Номер машины
+          example: 'I'
+          nullable: false
+        full_code:
+          type: string
+          description: Сгенерированный код
+          example: '1096680244I30212'
+          nullable: false
+      required:
+        - unique_value
+        - sku
+        - production_month
+        - production_year
+        - machine_number
+        - full_code
+
+    FactoryProducts:
+      type: object
+      properties:
+        productions:
+          type: object
+          description: Производство
+          nullable: false
+          properties:
+            id:
+              type: string
+              format: uuid
+              description: Идентификатор производства
+              example: "9fd9f480-b944-11ee-813b-2b05bebdd007"
+              nullable: false
+            name:
+              type: string
+              description: Название производства
+              example: "Rusinox"
+              nullable: false
+            products:
+              type: array
+              description: Перечень производимых артикулов
+              items:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: Идентификатор продукта
+                    example: 1
+                    nullable: false
+                  sku:
+                    type: integer
+                    description: Артикул
+                    example: '1096761001'
+                    nullable: false
+                  name:
+                    type: string
+                    description: Название продукта
+                    example: "Угольник настенный"
+                    nullable: false
+                required:
+                  - id
+                  - sku
+                  - name
+      required:
+        - productions
+
+
+    BatchStatus:
+      type: object
+      description: Статус ЖЦ партии
+      nullable: false
+      properties:
+        id:
+          type: integer
+          description: Уникальный идентификатор статуса
+          nullable: false
+          example: 1
+        name:
+          type: string
+          description: Название статуса
+          nullable: false
+          example: 'В производстве'
+        colour_scheme: 
+          type: string
+          description: Цветовая схема в HEX
+          nullable: false
+          example: '0F75E0'
+      required:
+        - id
+        - name
+        - colour_scheme
