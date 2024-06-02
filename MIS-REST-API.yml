@@ -699,35 +699,8 @@ components:
           description: Продукты партии
           nullable: false
           items:
-            type: object
-            description: Продукты партии
+            $ref: '#/components/schemas/NewExportRequest'
             nullable: false
-            properties:
-              sku:
-                type: string
-                description: Артикул продукта
-                nullable: false
-                example: '12406013003'
-              production_date:
-                type: string
-                description: Дата производства (YYYY-MM)
-                nullable: false
-                example: '2024-07'
-              machine_id:
-                type: integer
-                description: Номер машины
-                nullable: true
-                example: 1
-              count:
-                type: integer
-                description: Количество изделий
-                nullable: false
-                example: 500000
-            required:
-              - sku
-              - production_date
-              - machine_id
-              - count
       required:
         - factory_id
         - name
