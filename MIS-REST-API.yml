@@ -51,12 +51,17 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                description: Перечень партий
+                type: object
+                description: Объект с перечнем партий
                 nullable: false
-                items:
-                  $ref: '#/components/schemas/Batch'
-                  nullable: true
+                properties:
+                  batches:
+                    type: array
+                    description: Перечень партий
+                    nullable: false
+                    items:
+                      $ref: '#/components/schemas/Batch'
+                      nullable: true
         '401':
           description: Пользователь не авторизован
         '403':
