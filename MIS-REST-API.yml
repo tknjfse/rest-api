@@ -762,6 +762,7 @@ components:
       properties:
         id:
           type: integer
+          format: int64
           description: Уникальный идентификатор партии
           nullable: false
           example: 1
@@ -880,6 +881,7 @@ components:
       properties:
         id:
           type: integer
+          format: int64
           description: Уникальный идентификатор выгрузки
           nullable: false
           example: 1
