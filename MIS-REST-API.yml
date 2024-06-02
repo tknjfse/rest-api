@@ -4,6 +4,8 @@ info:
   version: '1.0'
 
 tags:
+- name: "Authorization"
+  description: "Авторизация и аутентификация"
 - name: "Batches"
   description: "Партии"
 - name: "Exports"
@@ -13,6 +15,38 @@ tags:
 
 
 paths:
+  /login/:
+    post:
+      operationId: login
+      tags:
+        - Authorization
+      summary: Авторизация пользователя в системе
+      requestBody:
+        description: Данные пользователя для авторизации
+        required: true
+        content:
+          application/json:
+            schema: 
+              $ref: '#/components/schemas/UserCredits'
+      responses:
+        '200':
+          description: Успешная авторизация
+        '401':
+          description: Неверный логин или пароль
+
+  /logout/:
+    post:
+      operationId: loguot
+      tags:
+        - Authorization
+      summary: Выход пользователя из системы
+      responses:
+        '200':
+          description: Успешный выход
+        '401':
+          description: Пользователь не авторизован
+
+
   /batches/:
     get:
       operationId: getBatches
@@ -681,6 +715,19 @@ components:
         - title
         - message
         - errors
+
+    UserCredits:
+      type: object
+      properties:
+        login:
+          type: string
+          description: Логин пользователя
+          nullable: false
+          example: example@mail.com
+        password:
+          type: string
+          format: password
+          description: Пароль пользователя
 
     NewBatchRequest:
       type: object
