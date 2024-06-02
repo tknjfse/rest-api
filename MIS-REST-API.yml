@@ -933,6 +933,47 @@ components:
         - items_count
         - preview
 
+    ExportPreviewString:
+      type: object
+      properties:
+        unique_value:
+          type: string
+          description: Уникальное значение
+          example: '30212'
+          nullable: false
+        sku:
+          type: string
+          description: Артикул
+          example: '1096680300'
+          nullable: false
+        production_month: 
+          type: integer
+          description: Месяц изготовления
+          example: 02
+          nullable: false
+        production_year:
+          type: integer
+          description: Год изготовления
+          example: 24
+          nullable: false
+        machine_number:
+          type: string
+          description: Номер машины
+          example: 'I'
+          nullable: false
+        full_code:
+          type: string
+          description: Сгенерированный код
+          example: '1096680244I30212'
+          nullable: false
+      required:
+        - unique_value
+        - sku
+        - production_month
+        - production_year
+        - machine_number
+        - full_code
+
     FactoryProducts:
       type: object
       properties:
@@ -979,6 +1020,8 @@ components:
                   - name
       required:
         - productions
+
+
     BatchStatus:
       type: object
       description: Статус ЖЦ партии
