@@ -1060,3 +1060,27 @@ components:
                   - name
       required:
         - productions
+    BatchStatus:
+      type: object
+      description: Статус ЖЦ партии
+      nullable: false
+      properties:
+        id:
+          type: integer
+          description: Уникальный идентификатор статуса
+          nullable: false
+          example: 1
+        name:
+          type: string
+          description: Название статуса
+          nullable: false
+          example: 'В производстве'
+        colour_scheme: 
+          type: string
+          description: Цветовая схема в HEX
+          nullable: false
+          example: '0F75E0'
+      required:
+        - id
+        - name
+        - colour_scheme
