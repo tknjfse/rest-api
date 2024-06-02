@@ -1013,3 +1013,50 @@ components:
         - machine_id
         - items_count
         - preview
+
+    FactoryProducts:
+      type: object
+      properties:
+        productions:
+          type: object
+          description: Производство
+          nullable: false
+          properties:
+            id:
+              type: string
+              format: uuid
+              description: Идентификатор производства
+              example: "9fd9f480-b944-11ee-813b-2b05bebdd007"
+              nullable: false
+            name:
+              type: string
+              description: Название производства
+              example: "Rusinox"
+              nullable: false
+            products:
+              type: array
+              description: Перечень производимых артикулов
+              items:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: Идентификатор продукта
+                    example: 1
+                    nullable: false
+                  sku:
+                    type: integer
+                    description: Артикул
+                    example: '1096761001'
+                    nullable: false
+                  name:
+                    type: string
+                    description: Название продукта
+                    example: "Угольник настенный"
+                    nullable: false
+                required:
+                  - id
+                  - sku
+                  - name
+      required:
+        - productions
