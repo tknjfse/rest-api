@@ -786,29 +786,7 @@ components:
           description: Месяц и год созданрия партии
           nullable: false
         status:
-          type: object
-          description: Статус ЖЦ партии
-          nullable: false
-          properties:
-            id:
-              type: integer
-              description: Уникальный идентификатор статуса
-              nullable: false
-              example: 1
-            name:
-              type: string
-              description: Название статуса
-              nullable: false
-              example: 'В производстве'
-            colour_scheme: 
-              type: string
-              description: Цветовая схема в HEX
-              nullable: false
-              example: '0F75E0'
-          required:
-            - id
-            - name
-            - colour_scheme
+          $ref: '#/components/schemas/BatchStatus'
       required:
         - id
         - factory_id
@@ -845,29 +823,7 @@ components:
           format: date
           description: Месяц и год созданрия партии
         status:
-          type: object
-          description: Статус ЖЦ партии
-          nullable: false
-          properties:
-            id:
-              type: integer
-              description: Уникальный идентификатор статуса
-              nullable: false
-              example: 1
-            name:
-              type: string
-              description: Название статуса
-              nullable: false
-              example: 'В производстве'
-            colour_scheme: 
-              type: string
-              description: Цветовая схема в HEX
-              nullable: false
-              example: '0F75E0'
-          required:
-            - id
-            - name
-            - colour_scheme
+          $ref: '#/components/schemas/BatchStatus'
         qa_report:
           type: string
           description: Протокол испытаний
