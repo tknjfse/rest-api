@@ -682,6 +682,19 @@ components:
         - message
         - errors
 
+    UserCredits:
+      type: object
+      properties:
+        login:
+          type: string
+          description: Логин пользователя
+          nullable: false
+          example: example@mail.com
+        password:
+          type: string
+          format: password
+          description: Пароль пользователя
+
     NewBatchRequest:
       type: object
       properties:
