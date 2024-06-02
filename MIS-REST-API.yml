@@ -810,10 +810,10 @@ components:
           nullable: false
           example: '2024-07'
         machine_id:
-          type: integer
+          type: string
           description: Номер машины
           nullable: true
-          example: 1
+          example: '1'
         count:
           type: integer
           description: Количество изделий
@@ -850,10 +850,10 @@ components:
           nullable: false
           example: '2024-07'
         machine_id:
-          type: integer
+          type: string
           description: Номер машины
           nullable: false
-          example: 1
+          example: '1'
         items_count:
           type: integer
           description: Количество изделий
