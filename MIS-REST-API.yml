@@ -421,47 +421,18 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    unique_value:
-                      type: string
-                      description: Уникальное значение
-                      example: '30212'
+                type: object
+                description: Объект со строками таблицы
+                nullable: false
+                properties:
+                  exportStrings:
+                    type: array
+                    description: Строки превью таблицы
+                    nullable: false
+                    items:
+                      $ref: '#/components/schemas/ExportPreviewString'
                       nullable: false
-                    sku:
-                      type: string
-                      description: Артикул
-                      example: '1096680300'
-                      nullable: false
-                    production_month: 
-                      type: integer
-                      description: Месяц изготовления
-                      example: 02
-                      nullable: false
-                    production_year:
-                      type: integer
-                      description: Год изготовления
-                      example: 24
-                      nullable: false
-                    machine_number:
-                      type: string
-                      description: Номер машины
-                      example: 'I'
-                      nullable: false
-                    full_code:
-                      type: string
-                      description: Сгенерированный код
-                      example: '1096680244I30212'
-                      nullable: false
-                  required:
-                    - unique_value
-                    - sku
-                    - production_month
-                    - production_year
-                    - machine_number
-                    - full_code
+                      
         '401':
           description: Пользователь не авторизован
         '403':
