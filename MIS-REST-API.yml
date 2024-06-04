@@ -777,11 +777,6 @@ components:
           format: date
           description: Дата созданрия партии
           nullable: false
-        production_date:
-          type: string
-          format: date
-          description: Месяц и год созданрия партии
-          nullable: false
         status:
           $ref: '#/components/schemas/BatchStatus'
       required:
@@ -790,7 +785,6 @@ components:
         - name
         - status
         - creation_date
-        - production_date
 
     BatchDetail:
       type: object
@@ -815,10 +809,6 @@ components:
           format: date
           description: Дата созданрия партии
           nullable: false
-        production_date:
-          type: string
-          format: date
-          description: Месяц и год созданрия партии
         status:
           $ref: '#/components/schemas/BatchStatus'
         qa_report:
@@ -841,7 +831,6 @@ components:
         - qa_report
         - exports
         - creation_date
-        - production_date
 
     NewExportRequest:
       type: object
