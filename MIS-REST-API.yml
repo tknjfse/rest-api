@@ -13,9 +13,8 @@ tags:
 - name: "Dictionaries"
   description: "Справочники"
 
-
 paths:
-  /login/:
+  /login:
     post:
       operationId: login
       tags:
@@ -31,12 +30,24 @@ paths:
       responses:
         '200':
           description: Успешная авторизация
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Объект с ролью пользователя
+                nullable: false
+                properties:
+                  userRoleId:
+                    type: integer
+                    description: Идентификатор роли пользователя
+                    nullable: false
+                    example: 1
         '401':
           description: Неверный логин или пароль
 
-  /logout/:
+  /logout:
     post:
-      operationId: loguot
+      operationId: logout
       tags:
         - Authorization
       summary: Выход пользователя из системы
@@ -46,8 +57,7 @@ paths:
         '401':
           description: Пользователь не авторизован
 
-
-  /batches/:
+  /batches:
     get:
       operationId: getBatches
       tags:
@@ -56,7 +66,7 @@ paths:
       security:
         - BasicAuth: []   
       parameters:
-        - name: factory_id
+        - name: factoryId
           in: query
           schema: 
             type: string
@@ -64,7 +74,7 @@ paths:
           required: false
           example: '9fd9f480-b944-11ee-813b-2b05bebdd007'
           description: Идентификатор производства
-        - name: status_id
+        - name: statusId
           in: query
           schema:
             type: array
@@ -81,21 +91,16 @@ paths:
           description: Строка поиска
       responses:
         '200':
-          description: Успешное получение перечня партий
+          description: Успешное получение списка партий
           content:
             application/json:
               schema:
-                type: object
-                description: Объект с перечнем партий
+                type: array
+                description: Список партий
                 nullable: false
-                properties:
-                  batches:
-                    type: array
-                    description: Перечень партий
-                    nullable: false
-                    items:
-                      $ref: '#/components/schemas/Batch'
-                      nullable: true
+                items:
+                  $ref: '#/components/schemas/Batch'
+                  nullable: true
         '401':
           description: Пользователь не авторизован
         '403':
@@ -238,7 +243,7 @@ paths:
       operationId: archiveBatch
       tags:
         - Batches
-      summary: Аривировать партию
+      summary: Архивировать партию
       security:
         - BasicAuth: []   
       parameters:
@@ -428,7 +433,7 @@ paths:
         '500':
           description: Внутренняя ошибка сервера
 
-  /batches/{id}/exports/{export_id}/preview:
+  /batches/{id}/exports/{exportId}/preview:
     get:
       operationId: previewExport
       tags:
@@ -443,7 +448,7 @@ paths:
             type: integer
           required: true
           description: Идентификатор партии
-        - name: export_id
+        - name: exportId
           in: path
           schema:
             type: integer
@@ -482,7 +487,7 @@ paths:
         '500':
           description: Внутренняя ошибка сервера
 
-  /batches/{id}/exports/{export_id}/rebind:
+  /batches/{id}/exports/{exportId}/rebind:
     patch:
       operationId: rebindExport
       tags:
@@ -497,7 +502,7 @@ paths:
             type: integer
           required: true
           description: Идентификатор партии
-        - name: export_id
+        - name: exportId
           in: path
           schema:
             type: integer
@@ -511,13 +516,14 @@ paths:
             schema:
               type: object
               properties:
-                target_batch_id:
+                targetBatchId:
                   type: integer
+                  format: int64
                   description: Идентификатор партии для привязки
                   nullable: false
                   example: 2
               required:
-                - target_batch_id
+                - targetBatchId
       responses:
         '200':
           description: Выгрузка успешно перепривязана 
@@ -544,7 +550,7 @@ paths:
         '500':
           description: Внутренняя ошибка сервера
 
-  /batches/{id}/exports/{export_id}:
+  /batches/{id}/exports/{exportId}:
     delete:
       operationId: deleteExport
       tags:
@@ -559,7 +565,7 @@ paths:
             type: integer
           required: true
           description: Идентификатор партии
-        - name: export_id
+        - name: exportId
           in: path
           schema:
             type: integer
@@ -634,7 +640,7 @@ paths:
           description: Внутренняя ошибка сервера
 
 
-  /factories/products/:
+  /factories/products:
     get:
       operationId: getFactoriesProducts
       tags:
@@ -643,7 +649,7 @@ paths:
       security:
        - BasicAuth: []
       parameters:
-        - name: factory_id
+        - name: factoryId
           in: query
           schema:
             type: string
@@ -662,7 +668,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FactoryProducts'
+                $ref: '#/components/schemas/Factory'
         '401':
           description: Пользователь не атвороизован 
         '403':
@@ -732,7 +738,7 @@ components:
     NewBatchRequest:
       type: object
       properties:
-        factory_id:
+        factoryId:
           type: string
           format: uuid
           description: Идентификатор производства
@@ -749,7 +755,7 @@ components:
             $ref: '#/components/schemas/NewExportRequest'
             nullable: false
       required:
-        - factory_id
+        - factoryId
         - name
         - products
 
@@ -762,7 +768,7 @@ components:
           description: Уникальный идентификатор партии
           nullable: false
           example: 1
-        factory_id:
+        factoryId:
           type: string
           format: uuid
           description: Идентификатор производства
@@ -772,29 +778,30 @@ components:
           description: Название партии
           nullable: false
           example: 'Партия 1'
-        creation_date:
+        creationDate:
           type: string
-          format: date
+          format: date-time
           description: Дата созданрия партии
           nullable: false
         status:
           $ref: '#/components/schemas/BatchStatus'
       required:
         - id
-        - factory_id
+        - factoryId
         - name
         - status
-        - creation_date
+        - creationDate
 
     BatchDetail:
       type: object
       properties:
         id:
           type: integer
+          format: int64
           description: Уникальный идентификатор партии
           nullable: false
           example: 1
-        factory_id:
+        factoryId:
           type: string
           format: uuid
           description: Идентификатор производства
@@ -804,14 +811,14 @@ components:
           description: Название партии
           nullable: false
           example: 'Партия 1'
-        creation_date:
+        creationDate:
           type: string
-          format: date
+          format: date-time
           description: Дата созданрия партии
           nullable: false
         status:
           $ref: '#/components/schemas/BatchStatus'
-        qa_report:
+        qaReport:
           type: string
           description: Протокол испытаний
           nullable: true
@@ -825,27 +832,27 @@ components:
             nullable: true
       required:
         - id
-        - factory_id
+        - factoryId
         - name
         - status
-        - qa_report
+        - qaReport
         - exports
-        - creation_date
+        - creationDate
 
     NewExportRequest:
       type: object
       properties:
-        sku:
+        article:
           type: string
           description: Артикул продукта
           nullable: false
           example: '12406013003'
-        production_date:
+        productionDate:
           type: string
           description: Дата производства (YYYY-MM)
           nullable: false
           example: '2024-07'
-        machine_id:
+        machineId:
           type: string
           description: Номер машины
           nullable: true
@@ -856,9 +863,9 @@ components:
           nullable: false
           example: 500000
       required:
-        - sku
-        - production_date
-        - machine_id
+        - article
+        - productionDate
+        - machineId
         - count 
 
     Export:
@@ -870,27 +877,27 @@ components:
           description: Уникальный идентификатор выгрузки
           nullable: false
           example: 1
-        sku:
+        article:
           type: string
           description: Артикул продукта
           nullable: false
           example: '12406013003'
-        product_name:
+        productName:
           type: string
           description: Название продукта
           nullable: false
           example: 'Угольник настенный'
-        production_date:
+        productionDate:
           type: string
           description: Дата производства (YYYY-MM)
           nullable: false
           example: '2024-07'
-        machine_id:
+        machineId:
           type: string
           description: Номер машины
           nullable: false
           example: '1'
-        items_count:
+        itemsCount:
           type: integer
           description: Количество изделий
           nullable: false
@@ -906,101 +913,82 @@ components:
             example: '1096641123IEAAAa'
       required:
         - id
-        - sku
-        - product_name
-        - production_date
-        - machine_id
-        - items_count
+        - article
+        - productName
+        - productionDate
+        - machineId
+        - itemsCount
         - preview
 
     ExportPreviewString:
       type: object
+      description: 30 строк
       properties:
-        unique_value:
-          type: string
-          description: Уникальное значение
-          example: '30212'
-          nullable: false
-        sku:
+        article:
           type: string
           description: Артикул
           example: '1096680300'
           nullable: false
-        production_month: 
-          type: integer
-          description: Месяц изготовления
-          example: 02
+        productionDate:
+          type: string
+          description: Дата производства (YYYY-MM)
           nullable: false
-        production_year:
-          type: integer
-          description: Год изготовления
-          example: 24
-          nullable: false
-        machine_number:
+          example: '2024-07'
+        machineNumber:
           type: string
           description: Номер машины
           example: 'I'
           nullable: false
-        full_code:
+        code:
           type: string
           description: Сгенерированный код
           example: '1096680244I30212'
           nullable: false
       required:
-        - unique_value
-        - sku
-        - production_month
-        - production_year
-        - machine_number
-        - full_code
+        - article
+        - productionDate
+        - machineNumber
+        - code
 
-    FactoryProducts:
+    Factory:
+      title: Factory
       type: object
-      properties:
-        productions:
-          type: object
-          description: Производство
-          nullable: false
-          properties:
-            id:
-              type: string
-              format: uuid
-              description: Идентификатор производства
-              example: "9fd9f480-b944-11ee-813b-2b05bebdd007"
-              nullable: false
-            name:
-              type: string
-              description: Название производства
-              example: "Rusinox"
-              nullable: false
-            products:
-              type: array
-              description: Перечень производимых артикулов
-              items:
-                type: object
-                properties:
-                  id:
-                    type: integer
-                    description: Идентификатор продукта
-                    example: 1
-                    nullable: false
-                  sku:
-                    type: integer
-                    description: Артикул
-                    example: '1096761001'
-                    nullable: false
-                  name:
-                    type: string
-                    description: Название продукта
-                    example: "Угольник настенный"
-                    nullable: false
-                required:
-                  - id
-                  - sku
-                  - name
       required:
-        - productions
+        - id
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Идентификатор производства
+          example: "9fd9f480-b944-11ee-813b-2b05bebdd007"
+        name:
+          type: string
+          description: Название производства
+          example: "Rusinox"
+          nullable: false
+        products:
+          type: array
+          description: Перечень производимых артикулов
+          items:
+            $ref: "#/components/schemas/Product"
 
+    Product:
+      title: Product
+      type: object
+      required:
+        - article
+        - name
+      properties:
+        article:
+          type: string
+          description: Артикул
+          example: 1096761001
+          nullable: false
+        name:
+          type: string
+          description: Название продукта
+          example: "Угольник настенный"
+          nullable: false
 
     BatchStatus:
       type: object
@@ -1017,12 +1005,12 @@ components:
           description: Название статуса
           nullable: false
           example: 'В производстве'
-        colour_scheme: 
+        colourScheme: 
           type: string
-          description: Цветовая схема в HEX
-          nullable: false
-          example: '0F75E0'
-      required:
-        - id
-        - name
-        - colour_scheme
+          description: Цветовая схема в HEX          
+          nullable: false          
+          example: '0F75E0'      
+          required:        
+            - id        
+            - name        
+            - colourScheme
