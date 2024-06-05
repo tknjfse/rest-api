@@ -552,19 +552,10 @@ components:
           nullable: false
           example: 'iPhone 11 Pro'
         error_navigation_stack:
-          type: array
+          type: string
           description: Стек открытых экранов/окон пользователя в момент проишествия
           nullable: false
-          items:
-            type: string
-            properties:
-              name:
-                type: string
-                description: Название экрана
-                nullable: false
-                example: 'Сканер'
-            required:
-              - name
+          example: 'Сканирование/Провальный результат сканирования'
         error_timestamp:
           type: string
           description: Время возникновения ошибки
