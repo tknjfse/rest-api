@@ -570,7 +570,7 @@ components:
           type: string
           description: Код ошибки
           example: 'unable_to_reach_server'
-          nullable: true
+          nullable: false
         first_label:
           type: string
           description: Первый код маркировки
