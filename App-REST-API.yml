@@ -269,6 +269,13 @@ paths:
       responses:
         '200':
           description: Успешный результат логирования
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  log:
+                    type: string
         '401':
           description: Нет доступа к REST API
         '500':
