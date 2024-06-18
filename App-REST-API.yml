@@ -11,6 +11,8 @@ tags:
   description: "Изделия"
 - name: "Dictionaries"
   description: "Словари"
+- name: "Metabot Logs"
+  description: "Логи поддержки 'Метабот'"
 
 paths:
   /verification:
@@ -230,7 +232,7 @@ paths:
   /log-error:
     post:
       tags:
-      - "Dictionaries"
+      - "Metabot Logs"
       summary: Логировать ошибку
       security:
        - apiKeyAuth: []
@@ -241,6 +243,29 @@ paths:
           application/json:
             schema:
                 $ref: '#/components/schemas/ErrorLog'
+      responses:
+        '200':
+          description: Успешный результат логирования
+        '401':
+          description: Нет доступа к REST API
+        '500':
+          description: Внутренняя ошибка сервера
+
+  /mblogs/{uuid}:
+    get:
+      tags:
+      - "Metabot Logs"
+      summary: Просмотреть лог
+      security:
+       - apiKeyAuth: []
+      parameters:
+        - name: uuid
+          in: path
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: UUID лога
       responses:
         '200':
           description: Успешный результат логирования
