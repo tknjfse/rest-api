@@ -521,9 +521,9 @@ components:
       type: object
       nullable: false
       properties:
-        hash:
+        uuid:
           type: string
-          description: Хеш строка лога
+          description: Уникальный идентификатор лога
           nullable: false
           example: '86c24905d28cfb9222f4231193cde547'
         app_version:
