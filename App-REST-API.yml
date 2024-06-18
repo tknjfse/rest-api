@@ -250,6 +250,29 @@ paths:
           description: Нет доступа к REST API
         '500':
           description: Внутренняя ошибка сервера
+
+  /mblogs/{uuid}:
+    get:
+      tags:
+      - "Metabot Logs"
+      summary: Просмотреть лог
+      security:
+       - apiKeyAuth: []
+      parameters:
+        - name: uuid
+          in: path
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: UUID лога
+      responses:
+        '200':
+          description: Успешный результат логирования
+        '401':
+          description: Нет доступа к REST API
+        '500':
+          description: Внутренняя ошибка сервера
           
 
 
