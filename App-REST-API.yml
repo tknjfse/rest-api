@@ -272,10 +272,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  log:
-                    type: string
+                $ref: '#/components/schemas/ErrorLog'
         '401':
           description: Нет доступа к REST API
         '500':
