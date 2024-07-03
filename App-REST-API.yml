@@ -22,6 +22,14 @@ paths:
       summary: Проверить информацию об изделии по Data-Matrix или Штрих-коду
       security:
        - apiKeyAuth: []
+      parameters:
+        - name: device_id
+          in: header
+          schema:
+            type: string
+            format: uuid
+          required: false
+          description: UUID устройства
       requestBody:
         description: Data Matrix код для проверки
         required: true
