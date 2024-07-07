@@ -13,6 +13,8 @@ tags:
   description: "Словари"
 - name: "Metabot Logs"
   description: "Логи поддержки 'Метабот'"
+- name: "Technical"
+  description: "Тех методы для переноса данных"
 
 paths:
   /verification:
@@ -285,6 +287,65 @@ paths:
           description: Нет доступа к REST API
         '500':
           description: Внутренняя ошибка сервера
+          
+  /history/scans/{factory_id}:
+    get:
+      tags:
+      - "Technical"
+      summary: Получить информацию о сканированиях по производству
+      security:
+       - apiKeyAuth: []
+      parameters:
+        - name: factory_id
+          in: path
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Идентификатор производства
+      responses:
+        '200':
+          description: Успешный результат логирования
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ScannedItem'
+        '401':
+          description: Нет доступа к REST API
+        '500':
+          description: Внутренняя ошибка сервера
+
+  /history/production-raw-items:
+    get:
+      tags:
+      - "Technical"
+      summary: Получить информацию о сканированиях по производству
+      security:
+       - apiKeyAuth: []
+      parameters:
+        - name: factory_id
+          in: path
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Идентификатор производства
+      responses:
+        '200':
+          description: Успешный результат логирования
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: '#/components/schemas/ProductionRawItem'
+        '401':
+          description: Нет доступа к REST API
+        '500':
+          description: Внутренняя ошибка сервера
+
           
 
 
@@ -630,7 +691,57 @@ components:
         - first_label
         - second_label
 
-  
+    ScannedItem:
+      description: Отсканированное изделие
+      type: object
+      nullable: false
+      properties:
+        uuid:
+          type: string
+          description: Идентификатор изделия
+          example: '123e4567-e89b-12d3-a456-426655440000'
+          nullable: false
+        scans_count:
+          type: integer
+          description: Количество проверок изделия
+          example: 0
+          nullable: false
+      required:
+        - uuid
+        - scans_count
+
+    ProductionRawItem:
+      description: Изделие определенное как барабан при сканировании
+      type: object
+      nullable: false
+      properties:
+        uuid:
+          type: string
+          description: Идентификатор изделия
+          example: '123e4567-e89b-12d3-a456-426655440000'
+          nullable: false
+        factory_id:
+          type: string
+          description: Идентификатор производства
+          example: '123e4567-e89b-12d3-a456-426655440000'
+          nullable: false
+        sku:
+          type: integer
+          description: Артикул продукта
+          nullable: false
+          example: 13709731001
+        codes_quantity:
+          type: integer
+          description: Количество кодов
+          nullable: false
+          example: 1000
+        created_at:
+          type: string
+          format: date
+          nullable: false
+      required:
+        - id
+          
   parameters:
     Page:
       name: page
