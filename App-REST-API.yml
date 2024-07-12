@@ -17,7 +17,7 @@ tags:
   description: "Тех методы для переноса данных"
 
 paths:
-  /verification:
+  /verification/{device_id}:
     post:
       tags:
       - "Verification"
@@ -26,7 +26,7 @@ paths:
        - apiKeyAuth: []
       parameters:
         - name: device_id
-          in: header
+          in: query
           schema:
             type: string
             format: uuid
