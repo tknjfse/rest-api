@@ -17,7 +17,7 @@ tags:
   description: "Тех методы для переноса данных"
 
 paths:
-  /verification/{device_id}:
+  /verification:
     post:
       tags:
       - "Verification"
