@@ -87,7 +87,7 @@ paths:
                 $ref: '#/components/schemas/BackendErrorResponse'
         '500':
           description: Внутренняя ошибка сервера
-          
+
   /items/{uuid}:
     get:
       tags:
@@ -122,7 +122,57 @@ paths:
                 $ref: '#/components/schemas/BackendErrorResponse'
         '500':
           description: Внутренняя ошибка сервера
-          
+
+  /segment-length:
+    get:
+      tags:
+        - Items
+      security:
+        - apiKeyAuth: []
+      summary: Измерить отрезок трубы между двумя кодами
+      requestBody:
+        description: Коды отрезка
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                first_code:
+                  type: string
+                  description: Первый код
+                  nullable: false
+                  example: 'f492599c77db38c0'
+                second_code:
+                  type: string
+                  description: Второй код
+                  nullable: false
+                  example: 'f492599c77db38c0'
+              required:
+                - first_code
+                - second_code
+      responses:
+        '200':
+          description: Успешный ответ с длинной отрезка
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: 
+                  length:
+                    type: integer
+                    description: Длина отрезка
+                    nullable: false
+                    example: 300
+        '422':
+          description: Обработанная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackendErrorResponse'
+        '500':
+          description: Внутренняя ошибка сервера
+
   /dictionaries/foundation:
     get:
       tags:
@@ -156,7 +206,7 @@ paths:
                       - recommended_version
                 required:
                   - versions
-                    
+
         '401':
           description: Нет доступа
         '422':
@@ -167,7 +217,7 @@ paths:
                 $ref: '#/components/schemas/BackendErrorResponse'
         '500':
           description: Внутренняя ошибка сервера
-          
+
   /dictionaries/instructions:
     get:
       tags:
@@ -238,7 +288,7 @@ paths:
                 $ref: '#/components/schemas/BackendErrorResponse'
         '500':
           description: Внутренняя ошибка сервера
-          
+
   /log-error:
     post:
       tags:
@@ -287,7 +337,7 @@ paths:
           description: Нет доступа к REST API
         '500':
           description: Внутренняя ошибка сервера
-          
+
   /history/scans/{factory_id}:
     get:
       tags:
@@ -339,17 +389,17 @@ paths:
             application/json:
               schema:
                 type: array
-                items: 
+                items:
                   $ref: '#/components/schemas/ProductionRawItem'
         '401':
           description: Нет доступа к REST API
         '500':
           description: Внутренняя ошибка сервера
 
-          
 
 
-components:               
+
+components:
   securitySchemes:
     apiKeyAuth:
       type: apiKey
@@ -377,8 +427,8 @@ components:
               nullable: false
               items:
                 type: string
-                nullable: false   
-    
+                nullable: false
+
     ProductItem:
       type: object
       properties:
@@ -407,7 +457,7 @@ components:
           description: Тип экземпляра
           nullable: false
           properties:
-            id: 
+            id:
               type: integer
               description: Идентификатор типа
               example: 1
@@ -426,7 +476,7 @@ components:
           description: Статус проверки
           nullable: true
           properties:
-            id: 
+            id:
               type: integer
               description: Идентификатор статуса
               example: 1
@@ -474,7 +524,7 @@ components:
         - authenticity_status
         - documents
         - product_info
-    
+
     Product:
       type: object
       properties:
@@ -573,7 +623,7 @@ components:
         - properties
         - options
         - documents
-        
+
     Property:
       description: Свойство продукта
       type: object
@@ -592,7 +642,7 @@ components:
       required:
         - name
         - value
-  
+
     ProductOption:
       description: Продуктовая опция
       type: object
@@ -613,7 +663,7 @@ components:
           nullable: false
           items:
             $ref: '#/components/schemas/Property'
-  
+
     ErrorLog:
       description: Лог ошибки пользователя
       type: object
@@ -741,7 +791,7 @@ components:
           nullable: false
       required:
         - id
-          
+
   parameters:
     Page:
       name: page
@@ -751,4 +801,3 @@ components:
       schema:
         type: integer
         default: 1
-        
