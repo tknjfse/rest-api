@@ -555,12 +555,21 @@ components:
                 type: string
                 description: Валюта
                 nullable: false
-                example: 'rub'
+                example: 'Российские рубли'
+              currency_number:
+                type: integer
+                description: Номер валюты по стандарту ISO 4217
+                nullable: false
               value:
                 type: integer
+                format: double
                 description: Значение
                 nullable: true
                 example: 15000
+            required:
+              - currency
+              - currency_number
+              - value
         preview_image:
           type: string
           description: Изображение для превью
