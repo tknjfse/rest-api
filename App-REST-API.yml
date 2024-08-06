@@ -543,33 +543,11 @@ components:
           description: Название продукта
           nullable: false
           example: Фитинг
-        recommended_retail_prices:
-          type: array
-          description: Рекомендованные розничные цены
+        recommended_retail_price:
+          type: integer
+          description: Рекомендованная розничная цена
           nullable: true
-          items:
-            type: object
-            description: Цены в валютах
-            properties:
-              currency:
-                type: string
-                description: Валюта
-                nullable: false
-                example: 'Российские рубли'
-              currency_number:
-                type: integer
-                description: Номер валюты по стандарту ISO 4217
-                nullable: false
-              value:
-                type: integer
-                format: double
-                description: Значение
-                nullable: true
-                example: 15000
-            required:
-              - currency
-              - currency_number
-              - value
+          example: 100
         preview_image:
           type: string
           description: Изображение для превью
