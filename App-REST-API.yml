@@ -164,8 +164,14 @@ paths:
                     description: Длина отрезка
                     nullable: false
                     example: 300
+                  sku:
+                    type: integer
+                    description: Артикул изделия
+                    nullable: false
+                    example: 12407373001
                 required:
                   - length
+                  - sku
 
         '422':
           description: Обработанная ошибка
