@@ -164,6 +164,9 @@ paths:
                     description: Длина отрезка
                     nullable: false
                     example: 300
+                required:
+                  - length
+
         '422':
           description: Обработанная ошибка
           content:
