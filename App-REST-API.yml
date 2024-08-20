@@ -130,27 +130,21 @@ paths:
       security:
         - apiKeyAuth: []
       summary: Измерить отрезок трубы между двумя кодами
-      requestBody:
-        description: Коды отрезка
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                first_code:
-                  type: string
-                  description: Первый код
-                  nullable: false
-                  example: 'f492599c77db38c0'
-                second_code:
-                  type: string
-                  description: Второй код
-                  nullable: false
-                  example: 'f492599c77db38c0'
-              required:
-                - first_code
-                - second_code
+      parameters:
+        - name: first_code
+          in: query
+          description: Первый код
+          schema:
+            type: string
+          required: true
+          example: 'f492599c77db38c0'
+        - name: last_code
+          in: query
+          description: Первый код
+          schema:
+            type: string
+          required: true
+          example: 'f492599c77db38c0'
       responses:
         '200':
           description: Успешный ответ с длинной отрезка
