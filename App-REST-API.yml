@@ -433,6 +433,32 @@ paths:
                 $ref: '#/components/schemas/BackendErrorResponse'
 
 
+  /catalog/products/{id}:
+    get:
+      tags:
+        - "Catalog"
+      summary: Получить детальную информацию о товаре
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 4703
+      responses:
+        '200':
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatalogProduct'
+        '422':
+          description: Обработанная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackendErrorResponse'
+
 components:
   securitySchemes:
     apiKeyAuth:
