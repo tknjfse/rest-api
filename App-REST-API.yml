@@ -572,7 +572,7 @@ components:
                 type: number
                 format: float
                 description: Значение
-                nullable: true
+                nullable: false
                 example: 1500.50
             required:
               - currency
