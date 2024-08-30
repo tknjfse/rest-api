@@ -551,6 +551,33 @@ components:
           description: Рекомендованная розничная цена
           nullable: true
           example: 100
+        recommended_retail_prices_locales:
+          type: array
+          description: Локализованеные рекомендованные розничные цены
+          nullable: true
+          items:
+            type: object
+            description: Цены в валютах
+            properties:
+              currency:
+                type: string
+                description: Валюта
+                nullable: false
+                example: 'Российские рубли'
+              currency_number:
+                type: integer
+                description: Номер валюты по стандарту ISO 4217
+                nullable: false
+              value:
+                type: number
+                format: float
+                description: Значение
+                nullable: false
+                example: 1500.50
+            required:
+              - currency
+              - currency_number
+              - value
         preview_image:
           type: string
           description: Изображение для превью
