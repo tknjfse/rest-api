@@ -15,6 +15,8 @@ tags:
   description: "Логи поддержки 'Метабот'"
 - name: "Technical"
   description: "Тех методы для переноса данных"
+- name: "Catalog"
+  description: "Каталог товаров"
 
 paths:
   /verification:
@@ -400,7 +402,221 @@ paths:
           description: Внутренняя ошибка сервера
 
 
+  /catalog/categories:
+    get:
+      tags:
+        - "Catalog"
+      summary: Получить структуру каталога
+      security:
+        - apiKeyAuth: []
+      parameters:
+        - name: category_id
+          in: query
+          schema:
+            type: integer
+          required: false
+          description: Идентификатор категории
+      responses:
+        '200':
+          description: Успешный ответ со структурой каталога
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Category'
+        '422':
+          description: Обработанная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackendErrorResponse'
 
+  /catalog/categories/{id}/products:
+    get:
+      tags:
+        - "Catalog"
+      summary: Получить список товаров по идентификатору категории
+      parameters:
+        - name: id
+          in: path
+          description: Идентификатор категории
+          required: true
+          schema:
+            type: integer
+            example: 346
+        - name: page
+          description: Номер страницы
+          in: query
+          required: false
+          schema:
+            type: integer
+            example: 1
+            minimum: 0
+        - name: limit
+          description: Количество объектов на странице
+          in: query
+          required: false
+          schema:
+            type: integer
+            example: 10
+            minimum: 1
+            maximum: 10000
+      responses:
+        '200':
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    description: Общее количество элементов
+                    example: 285
+                    nullable: false
+                  pages:
+                    type: integer
+                    description: Общее количество страниц (с учетом текущего размера size)
+                    example: 29
+                    nullable: false
+                  first:
+                    type: boolean
+                    description: Признак первой страницы
+                    example: false
+                    nullable: false
+                  last:
+                    type: boolean
+                    description: Признак последней страницы
+                    example: false
+                    nullable: false
+                  size:
+                    type: integer
+                    description: Размер шага (предельное количество элементов на странице)
+                    example: 10
+                    nullable: false
+                  number_of_elements:
+                    type: integer
+                    description: Количество элементов на текущей странице
+                    example: 10
+                    nullable: false
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CatalogProduct'
+        '422':
+          description: Обработанная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackendErrorResponse'
+
+  /catalog/products/search:
+    get:
+      tags:
+        - "Catalog"
+      summary: Найти товар по названию или артикулу
+      parameters:
+        - name: q
+          in: query
+          description: Значение поискового запроса
+          required: true
+          schema:
+            type: string
+            example: 19932661907
+            minLength: 3
+            maxLength: 150
+        - name: page
+          in: query
+          description: Номер страницы
+          required: false
+          schema:
+            type: integer
+            example: 1
+            minimum: 0
+        - name: limit
+          in: query
+          description: Количество объектов на странице
+          required: false
+          schema:
+            type: integer
+            example: 10
+            minimum: 1
+            maximum: 10000
+      responses:
+        '200':
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    description: Общее количество элементов
+                    example: 285
+                    nullable: false
+                  pages:
+                    type: integer
+                    description: Общее количество страниц (с учетом текущего размера size)
+                    example: 29
+                    nullable: false
+                  first:
+                    type: boolean
+                    description: Признак первой страницы
+                    example: false
+                    nullable: false
+                  last:
+                    type: boolean
+                    description: Признак последней страницы
+                    example: false
+                    nullable: false
+                  size:
+                    type: integer
+                    description: Размер шага (предельное количество элементов на странице)
+                    example: 10
+                    nullable: false
+                  number_of_elements:
+                    type: integer
+                    description: Количество элементов на текущей странице
+                    example: 10
+                    nullable: false
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CatalogProduct'
+        '422':
+          description: Обработанная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackendErrorResponse'
+
+  /catalog/products/{id}:
+    get:
+      tags:
+        - "Catalog"
+      summary: Получить детальную информацию о товаре
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 4703
+      responses:
+        '200':
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatalogProduct'
+        '422':
+          description: Обработанная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackendErrorResponse'
 
 components:
   securitySchemes:
@@ -781,6 +997,139 @@ components:
           nullable: false
       required:
         - id
+
+    Category:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: id категории
+          example: 33
+          nullable: false
+        name:
+          type: string
+          description: имя категории
+          example: Теплый пол
+          nullable: false
+        picture:
+          type: string
+          description: Файл с изображением. Относительный путь
+          example: b5/xZRBn1kEtp.JPG
+          nullable: false
+        level:
+          type: integer
+          description: Уровень категории
+          example: 2
+          nullable: false
+        last_level:
+          type: boolean
+          description: Категория является последней в структуре
+          example: false
+          nullable: false
+        children:
+          type: array
+          description: Массив категорий-потомков
+          nullable: true
+          items:
+            type: object
+            $ref: '#/components/schemas/Category'
+            nullable: false
+      required:
+        - id
+        - name
+        - picture
+        - level
+        - last_level
+        - children
+
+    CatalogProduct:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Идентификатор товара в PIM
+          example: 4703
+          nullable: false
+        name:
+          type: string
+          description: Название товара
+          example: Гребенка распределительная на две трубы R/Rp 3/4-16 RX+
+          nullable: false
+        articul:
+          type: string
+          description: Артикул
+          example: 13280081002
+          nullable: false
+        price:
+          type: number
+          description: Цена - для отдельных товаров
+          format: float
+          example: 2000.0
+          nullable: true
+        min_price:
+          type: number
+          description: Цена "от" - для мастер-карт
+          format: float
+          example: 2000.0
+          nullable: true
+        picture:
+          type: string
+          description: Ссылка на изображение (относительный путь)
+          example: 76/eZX2dNx88f.JPG
+          nullable: true
+        program:
+          type: object
+          description: Программа поставки
+          nullable: false
+          properties:
+            id:
+              type: integer
+              description: Идентификатор программы поставки
+              example: 4
+              nullable: true
+            name:
+              type: string
+              description: Название программы поставки
+              example: RAUTITAN
+              nullable: true
+          required:
+            - id
+            - name
+        category_tree:
+          type: array
+          description: Структура категорий, к которой относится товар (от корневой до непосредственной категории)
+          nullable: true
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                description: Идентификатор категории
+                example: 346
+                nullable: false
+              name:
+                type: string
+                description: Название категории
+                example: РЕХАУ.ПРО
+                nullable: false
+              parent_id:
+                type: integer
+                description: Идентификатор родительской категории. У корневой - null
+                example: 1
+                nullable: true
+            required:
+              - id
+              - name
+              - parent_id
+      required:
+        - id
+        - name
+        - articul
+        - price
+        - min_price
+        - picture
+        - program
+        - category_tree
 
   parameters:
     Page:
