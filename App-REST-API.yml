@@ -584,7 +584,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/CatalogProduct'
+                      $ref: '#/components/schemas/CatalogProductPreview'
         '422':
           description: Обработанная ошибка
           content:
