@@ -511,6 +511,87 @@ paths:
               schema:
                 $ref: '#/components/schemas/BackendErrorResponse'
 
+  /catalog/products/search:
+    get:
+      tags:
+        - "Catalog"
+      summary: Найти товар по названию или артикулу
+      parameters:
+        - name: q
+          in: query
+          description: Значение поискового запроса
+          required: true
+          schema:
+            type: string
+            example: 19932661907
+            minLength: 3
+            maxLength: 150
+        - name: page
+          in: query
+          description: Номер страницы
+          required: false
+          schema:
+            type: integer
+            example: 1
+            minimum: 0
+        - name: limit
+          in: query
+          description: Количество объектов на странице
+          required: false
+          schema:
+            type: integer
+            example: 10
+            minimum: 1
+            maximum: 10000
+      responses:
+        '200':
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    description: Общее количество элементов
+                    example: 285
+                    nullable: false
+                  pages:
+                    type: integer
+                    description: Общее количество страниц (с учетом текущего размера size)
+                    example: 29
+                    nullable: false
+                  first:
+                    type: boolean
+                    description: Признак первой страницы
+                    example: false
+                    nullable: false
+                  last:
+                    type: boolean
+                    description: Признак последней страницы
+                    example: false
+                    nullable: false
+                  size:
+                    type: integer
+                    description: Размер шага (предельное количество элементов на странице)
+                    example: 10
+                    nullable: false
+                  number_of_elements:
+                    type: integer
+                    description: Количество элементов на текущей странице
+                    example: 10
+                    nullable: false
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CatalogProduct'
+        '422':
+          description: Обработанная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackendErrorResponse'
+
 components:
   securitySchemes:
     apiKeyAuth:
