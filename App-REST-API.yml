@@ -1060,6 +1060,144 @@ components:
           description: Артикул
           example: 13280081002
           nullable: false
+        former_articul:
+          type: string
+          description: Прежний артикул
+          example: 13280081002
+          nullable: true
+        is_master_card:
+          type: boolean
+          description: Товар является мастер-картой
+          example: true
+          nullable: false
+        content:
+          type: string
+          description: Описание (для группы товаров)
+          example: "Используется для монтажа систем водоснабжения и отопления с трубами RAUTITAN stabil и RAUTITAN flex.\n Материал: бронза в соответствии с DIN EN SPEC 2701.\n Цвет: гладкая бронза."
+          nullable: true
+        description:
+          type: string
+          description: Описание (для группы товаров)
+          example: "Предназначена для систем обогрева поверхностей."
+          nullable: true
+        price:
+          type: number
+          description: Цена - для отдельных товаров
+          format: float
+          example: 2000.0
+          nullable: true
+        min_price:
+          type: number
+          description: Цена "от" - для мастер-карт
+          format: float
+          example: 2000.0
+          nullable: true
+        main_picture:
+          type: string
+          description: Ссылка на изображение (относительный путь)
+          example: 76/eZX2dNx88f.JPG
+          nullable: true
+        pictures:
+          type: array
+          description: Массив по ссылками на остальные изображения (относительный путь)
+          nullable: false
+          items:
+            type: string
+            description: Ссылка на изображение (относительный путь)
+            nullable: false
+            example: 76/eZX2dNx88f.JPG
+        program:
+          type: object
+          description: Программа поставки
+          nullable: false
+          properties:
+            id:
+              type: integer
+              description: Идентификатор программы поставки
+              nullable: true
+              example: 1
+            name:
+              type: string
+              description: Название программы поставки
+              nullable: true
+              example: "RAUTITAN"
+        category:
+          type: object
+          description: Основная категория, к которой относится товар
+          nullable: false
+          properties:
+            id:
+              type: integer
+              description: Идентификатор категории
+              nullable: false
+              example: 1
+            name:
+              type: string
+              description: Название категории
+              nullable: false
+              example: "Универсальные фитинги RAUTITAN для водоснабжения и отопления"
+        unit:
+          type: object
+          description: Единица измерения
+          nullable: false
+          properties:
+            id:
+              type: integer
+              description: Идентификатор единицы измерения
+              nullable: false
+              example: 1
+            name:
+              type: string
+              description: Название единицы измерения
+              nullable: false
+              example: "шт."
+        multiplicity:
+          type: integer
+          description: Единица поставки
+          nullable: true
+          example: 1
+        properties:
+          type: array
+          description: Массив характеристик товара
+          nullable: false
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                description: Идентификатор свойства
+                nullable: false
+                example: 1
+              name:
+                type: string
+                description: Название свойства
+                nullable: false
+                example: "Материал (BS)"
+              value:
+                type: string
+                description: Значение свойства
+                nullable: false
+                example: "Сшитый полиэтилен (РЕ-Ха),  \nКислородозащитный слой."
+
+
+    CatalogProductPreview:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Идентификатор товара в PIM
+          example: 4703
+          nullable: false
+        name:
+          type: string
+          description: Название товара
+          example: Гребенка распределительная на две трубы R/Rp 3/4-16 RX+
+          nullable: false
+        articul:
+          type: string
+          description: Артикул
+          example: 13280081002
+          nullable: false
         price:
           type: number
           description: Цена - для отдельных товаров
